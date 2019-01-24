@@ -1,0 +1,3 @@
+[submodule "nvc"]
+	path = nvc
+	url = https://github.com/nickg/nvc
