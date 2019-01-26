@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 2.8.11)
 project (tuesday)
 
 # GCC defaults to an ancient version of C
-set_property(TARGET tuesday PROPERTY C_STANDARD 99)
+set_property(TARGET PROPERTY C_STANDARD 99)
 
 add_library (tuesday SHARED
     # there's a better way to do this but it wasn't being cooperative
