@@ -890,50 +890,7 @@ static const char *signame(int sig)
 
 static void bt_sighandler(int sig, siginfo_t *info, void *secret)
 {
-   ucontext_t *uc = (ucontext_t*)secret;
-   uintptr_t ip = uc->PC_FROM_UCONTEXT;
 
-   if (sig == SIGSEGV)
-      check_guard_page((uintptr_t)info->si_addr);
-
-   color_fprintf(stderr, "\n$red$$bold$*** Caught signal %d (%s)",
-                 sig, signame(sig));
-
-   switch (sig) {
-   case SIGSEGV:
-   case SIGILL:
-   case SIGFPE:
-   case SIGBUS:
-      fprintf(stderr, " [address=%p, ip=%p]", info->si_addr, (void*)ip);
-      break;
-   }
-
-   color_fprintf(stderr, " ***$$\n");
-
-#if defined HAVE_LIBDW
-   fprintf(stderr, "\n");
-   int skip = 2;
-   _Unwind_Backtrace(libdw_trace_iter, &skip);
-#elif defined HAVE_EXECINFO_H
-   void *trace[N_TRACE_DEPTH];
-   int trace_size = 0;
-   char **messages = NULL;
-
-   trace_size = backtrace(trace, N_TRACE_DEPTH);
-
-   // Overwrite sigaction with caller's address
-   trace[1] = (void*)ip;
-
-   messages = backtrace_symbols(trace, trace_size);
-
-   // Skip first stack frame (points here)
-   print_trace(messages + 1, trace_size - 1);
-
-   free(messages);
-#endif
-
-   if (sig != SIGUSR1)
-      exit(2);
 }
 #endif  // !__MINGW32__
 
@@ -965,21 +922,6 @@ bool is_debugger_running(void)
 
 #if defined __APPLE__
 
-   struct kinfo_proc info;
-   info.kp_proc.p_flag = 0;
-
-   int mib[4];
-   mib[0] = CTL_KERN;
-   mib[1] = KERN_PROC;
-   mib[2] = KERN_PROC_PID;
-   mib[3] = getpid();
-
-   size_t size = sizeof(info);
-   int rc = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
-   if (rc != 0)
-      fatal_errno("sysctl");
-
-   return (cached = ((info.kp_proc.p_flag & P_TRACED) != 0));
 
 #elif defined __linux
 
@@ -1033,6 +975,7 @@ bool is_debugger_running(void)
    return (cached = false);
 
 #endif
+   return false;
 }
 
 #ifdef __linux
@@ -1066,7 +1009,7 @@ void register_trace_signal_handlers(void)
 {
 #if defined __MINGW32__
 
-   
+
 
 #elif !defined NO_STACK_TRACE
    if (is_debugger_running())
@@ -1120,7 +1063,7 @@ void term_init(void)
    bool is_tty = isatty(STDERR_FILENO) && isatty(STDOUT_FILENO);
 
 #ifdef __MINGW32__
-   
+
 #endif
 
    want_color = is_tty && (nvc_no_color == NULL);
@@ -1264,7 +1207,7 @@ int64_t ipow(int64_t x, int64_t y)
 
 void *mmap_guarded(size_t sz, const char *tag)
 {
-
+   return NULL;
 }
 
 int checked_sprintf(char *buf, int len, const char *fmt, ...)
@@ -1407,7 +1350,7 @@ void nvc_rusage(nvc_rusage_t *ru)
 
    last = sys;
 #else
-   
+
 #endif
 }
 
@@ -1447,7 +1390,7 @@ void run_program(const char *const *args, size_t n_args)
 void file_read_lock(int fd)
 {
 #ifdef __MINGW32__
-   
+
 #else
    if (flock(fd, LOCK_SH) < 0)
       fatal_errno("flock");
@@ -1457,7 +1400,7 @@ void file_read_lock(int fd)
 void file_write_lock(int fd)
 {
 #ifdef __MINGW32__
-   
+
 #else
    if (flock(fd, LOCK_EX) < 0)
       fatal_errno("flock");
@@ -1467,7 +1410,7 @@ void file_write_lock(int fd)
 void file_unlock(int fd)
 {
 #ifdef __MINGW32__
-  
+
 #else
    if (flock(fd, LOCK_UN) < 0)
       fatal_errno("flock");
@@ -1482,7 +1425,7 @@ void *map_file(int fd, size_t size)
 void unmap_file(void *ptr, size_t size)
 {
 #ifdef __MINGW32__
-   
+
 #else
    munmap(ptr, size);
 #endif
@@ -1491,7 +1434,7 @@ void unmap_file(void *ptr, size_t size)
 void make_dir(const char *path)
 {
 #ifdef __MINGW32__
-   
+
 #else
    if (mkdir(path, 0777) != 0 && errno != EEXIST)
       fatal_errno("mkdir: %s", path);
