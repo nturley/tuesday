@@ -916,65 +916,6 @@ static bool scan_file_for_token(const char *file, const char *token)
 
 bool is_debugger_running(void)
 {
-   static int cached = -1;
-   if (cached != -1)
-      return cached;
-
-#if defined __APPLE__
-
-
-#elif defined __linux
-
-   // Hack to detect if Valgrind is running
-   if (scan_file_for_token("/proc/self/maps", "vgpreload"))
-      return (cached = true);
-
-   // Ptrace technique below doesn't work on WSL
-   if (scan_file_for_token("/proc/version", "Microsoft"))
-      return (cached = false);
-
-#ifdef PR_SET_PTRACER
-   // For Linux 3.4 and later allow tracing from any proccess
-   // Failure is harmless as this may not be implemented even in a >3.4 kernel
-   (void)prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
-#endif  // PR_SET_PTRACER
-
-   pid_t pid = fork();
-
-   if (pid == -1)
-      fatal_errno("fork");
-   else if (pid == 0) {
-      int ppid = getppid();
-
-      // Try to trace the parent: if we can then GDB is not running
-      if (ptrace(PTRACE_ATTACH, ppid, NULL, NULL) == 0) {
-         // Wait for the parent to stop and continue it
-         waitpid(ppid, NULL, 0);
-         ptrace(PTRACE_CONT, NULL, NULL);
-
-         // Detach
-         ptrace(PTRACE_DETACH, ppid, NULL, NULL);
-
-         // Able to trace so debugger not present
-         exit(0);
-      }
-      else {
-         // Trace failed so debugger is present
-         exit(1);
-      }
-   }
-   else {
-      int status;
-      waitpid(pid, &status, 0);
-      return (cached = WEXITSTATUS(status));
-   }
-
-#else
-
-   // Not able to detect debugger on this platform
-   return (cached = false);
-
-#endif
    return false;
 }
 
