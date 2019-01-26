@@ -6,7 +6,6 @@ addons:
   homebrew:
     packages:
     - flex
-addons:
   apt:
     packages:
     - flex
