@@ -2,8 +2,7 @@
 cmake_minimum_required (VERSION 2.8.11)
 project (tuesday)
 
-# GCC defaults to an ancient version of C
-set_property(TARGET PROPERTY C_STANDARD 99)
+
 
 add_library (tuesday SHARED
     # there's a better way to do this but it wasn't being cooperative
@@ -34,6 +33,9 @@ add_library (tuesday SHARED
     # utils has more crap than I want, so I ripped a bunch out
     nvc_patch/util.c
 )
+
+# GCC defaults to an ancient version of C
+set_property(TARGET tuesday PROPERTY C_STANDARD 99)
 
 target_include_directories(tuesday PRIVATE nvc/src nvc/thirdparty)
 
