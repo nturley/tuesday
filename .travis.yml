@@ -1,0 +1,10 @@
+os: osx
+addons:
+  homebrew:
+    packages:
+    - flex
+script:
+     - mkdir build
+     - cd build
+     - cmake ..
+     - make
