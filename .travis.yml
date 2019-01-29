@@ -1,4 +1,23 @@
 language: c
+matrix:
+  include:
+    - name: gcc
+      os: linux
+      script: cmake .. && make
+    - name: osx clang
+      os: osx
+      script: cmake .. && make
+    - name: linux emscripten
+      os: linux
+      install:
+        - wget https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz
+        - tar xvzf emsdk-portable.tar.gz
+        - cd emsdk-portable
+        - ./emsdk install latest
+        - ./emsdk activate latest
+        - source ./emsdk_env.sh
+        - cd ..
+      script: cmake .. -DCMAKE_C_COMPILER=$EMSCRIPTEN/emcc && make
 os:
   - linux
   - osx
@@ -9,8 +28,7 @@ addons:
   apt:
     packages:
     - flex
-script:
-     - mkdir build
-     - cd build
-     - cmake ..
-     - make
+before_script:
+  - mkdir build
+  - cd build
+

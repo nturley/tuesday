@@ -2,8 +2,6 @@
 cmake_minimum_required (VERSION 2.8.11)
 project (tuesday)
 
-
-
 add_library (tuesday SHARED
     # there's a better way to do this but it wasn't being cooperative
     ${CMAKE_CURRENT_BINARY_DIR}/lexer.c
@@ -32,6 +30,7 @@ add_library (tuesday SHARED
     nvc/thirdparty/fastlz.c
     # utils has more crap than I want, so I ripped a bunch out
     nvc_patch/util.c
+    # I might also need elab.c at some point
 )
 
 # GCC defaults to an ancient version of C
@@ -50,5 +49,5 @@ target_compile_definitions(tuesday PRIVATE DATADIR="./")
 
 find_package(FLEX)
 FLEX_TARGET(lexer nvc/src/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
+# OSX needed a hint
 find_library(FLEX_LIBRARY fl HINTS /usr/local/opt/flex/lib)
-# target_link_libraries(tuesday PRIVATE ${FLEX_LIBRARY})
