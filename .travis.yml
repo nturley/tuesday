@@ -13,11 +13,16 @@ before_script:
   - cd build
 script:
   - cmake .. && make
+before_deploy:
+  - git config --global user.email "builds@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - export GIT_TAG=$TRAVIS_BRANCH-0.1.$TRAVIS_BUILD_NUMBER
+  - git tag $GIT_TAG -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
 jobs:
   include:
     - stage: osx build
       os: osx
-      deploy: &deploy_base
+      deploy:
         provider: releases
         api_key:
           secure: ejc/ZX1AONa2QKhcUAbvRYFkR9jzY22aKHhwm5X4JtyRvk4z3dHRUh5s8FvCfBXc7RyEPBzW/OGlERC7YsUI07RqGsX4gcofwWWimb4foxiX38t8o3SGE/cFzBqFcjRljNIwUK2hXfV7eBRnaZkOImqC0bHhYDucNRWUhhhnZs+kToxeiv2PxkugqiGxp3YtKUxsxF7f8OD8bcI5F5imVcWNymPM96WR3LHLDKgPlOLsnYwvEPJHz1Sz29iztZMQtcvvRJGzlqSkt92xT9nfc13LBhte+79P9pw6cac0c4XBoxXqq+1vRaINAXuaf7gGegWzwcyQfd92x5fZiufEmw6pzLta6svapCh851EN61elacfUthfGjA//9hMS7G+pobyXehGGvtzUr02XxCKK8IRrh/lsXa4eSI5eDlvDBhp9OIZXuiCWAWG9uudsugER/OYzWOi8gdzM/f+xcm0jBOH++VZXs1py7PkD40n5NIJTSlv2BDTji9FcKCRWFRWTmjBlIlDiZPdGk1VgBHmQR1NqcHfPqWNloHM0g7d9dTcibixj8nR5h2KVkTCm5RQwiHFy3rF0Y5/mZfIgZdwKxC1vRe68mLGdtNFEX+p8fMDC2B1falumm5Hs23FxUIJ7oSxjNSLV9mTO37kXrhrkZgw3AThzM4rUEoXIL0RE06k=
@@ -29,6 +34,11 @@ jobs:
     - stage: linux build and publish
       os: linux
       deploy:
-        <<: *deploy_base
+        provider: releases
+        api_key:
+          secure: ejc/ZX1AONa2QKhcUAbvRYFkR9jzY22aKHhwm5X4JtyRvk4z3dHRUh5s8FvCfBXc7RyEPBzW/OGlERC7YsUI07RqGsX4gcofwWWimb4foxiX38t8o3SGE/cFzBqFcjRljNIwUK2hXfV7eBRnaZkOImqC0bHhYDucNRWUhhhnZs+kToxeiv2PxkugqiGxp3YtKUxsxF7f8OD8bcI5F5imVcWNymPM96WR3LHLDKgPlOLsnYwvEPJHz1Sz29iztZMQtcvvRJGzlqSkt92xT9nfc13LBhte+79P9pw6cac0c4XBoxXqq+1vRaINAXuaf7gGegWzwcyQfd92x5fZiufEmw6pzLta6svapCh851EN61elacfUthfGjA//9hMS7G+pobyXehGGvtzUr02XxCKK8IRrh/lsXa4eSI5eDlvDBhp9OIZXuiCWAWG9uudsugER/OYzWOi8gdzM/f+xcm0jBOH++VZXs1py7PkD40n5NIJTSlv2BDTji9FcKCRWFRWTmjBlIlDiZPdGk1VgBHmQR1NqcHfPqWNloHM0g7d9dTcibixj8nR5h2KVkTCm5RQwiHFy3rF0Y5/mZfIgZdwKxC1vRe68mLGdtNFEX+p8fMDC2B1falumm5Hs23FxUIJ7oSxjNSLV9mTO37kXrhrkZgw3AThzM4rUEoXIL0RE06k=
+        skip_cleanup: true
+        on:
+          repo: nturley/tuesday
         draft: false
         file: libtuesday.so
