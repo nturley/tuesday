@@ -11,9 +11,11 @@ addons:
 before_script:
   - mkdir build
   - cd build
+script:
+  - cmake .. && make
 jobs:
   include:
-    - stage: upload osx binary
+    - stage: osx build
       os: osx
       deploy: &deploy_base
         provider: releases
@@ -24,7 +26,7 @@ jobs:
         skip_cleanup: true
         on:
           repo: nturley/tuesday
-    - stage: upload linux binary, publish
+    - stage: linux build and publish
       os: linux
       deploy:
         <<: *deploy_base
