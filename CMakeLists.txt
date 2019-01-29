@@ -1,6 +1,6 @@
 # I have no good reason to pick this version
 cmake_minimum_required (VERSION 2.8.11)
-project (tuesday)
+project (tuesday C)
 
 add_library (tuesday SHARED
     # there's a better way to do this but it wasn't being cooperative

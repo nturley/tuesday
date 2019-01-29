@@ -17,10 +17,7 @@ matrix:
         - ./emsdk activate latest
         - source ./emsdk_env.sh
         - cd ..
-      script: cmake .. -DCMAKE_C_COMPILER=$EMSCRIPTEN/emcc && make
-os:
-  - linux
-  - osx
+      script: CC=$EMSCRIPTEN/emcc cmake .. && make
 addons:
   homebrew:
     packages:
