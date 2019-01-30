@@ -1,4 +1,5 @@
 version: 1.0.{build}
+skip_non_tags: true
 init:
 - cmd: >-
     choco install mingw -y
@@ -14,15 +15,11 @@ build_script:
     cmake --version
     cmake .. -G "MinGW Makefiles"
     mingw32-make
+    cd ..
 artifacts: 
-  - path: build\libtuesday.dll
-    name: Releases
+  - path: build/libtuesday.dll
 deploy:
 - provider: GitHub
   auth_token:
     secure: FRoyLpk+k5AdG+znJ2jHcnp41ENo19Obv2vyhhh2ihg35oUVbM+KHhFlV+ChG+mp
-  artifact: libtuesday.dll
-  draft: false
-  prerelease: false
-  on:
-    appveyor_repo_tag: true
+  artifact: build/libtuesday.dll
