@@ -1,0 +1,32 @@
+version: 1.0.{build}
+init:
+- cmd: >-
+    choco install mingw -y
+
+    choco install winflexbison -y
+
+    refreshenv
+build_script:
+- cmd: >-
+    git submodule update --init --recursive
+
+    mkdir build
+
+    cd build
+
+    set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+
+    echo %PATH%
+
+    cmake --version
+
+    cmake .. -G "MinGW Makefiles"
+
+    mingw32-make
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: FRoyLpk+k5AdG+znJ2jHcnp41ENo19Obv2vyhhh2ihg35oUVbM+KHhFlV+ChG+mp
+  artifact: libtuesday.dll
+  force_update: true
+  skip_tags: true
