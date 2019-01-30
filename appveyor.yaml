@@ -15,15 +15,14 @@ build_script:
     cmake .. -G "MinGW Makefiles"
     mingw32-make
 artifacts: 
-  - path: build/libtuesday.dll
-    name: libtuesday
+  - path: build\libtuesday.dll
+    name: Releases
 deploy:
 - provider: GitHub
   auth_token:
     secure: FRoyLpk+k5AdG+znJ2jHcnp41ENo19Obv2vyhhh2ihg35oUVbM+KHhFlV+ChG+mp
-  artifact: libtuesday
-  force_update: true
-  skip_tags: true
+  artifact: libtuesday.dll
+  draft: false
+  prerelease: false
   on:
-    branch: master                 # release from master branch only
-    APPVEYOR_REPO_TAG: true        # deploy on tag push only
+    appveyor_repo_tag: true
