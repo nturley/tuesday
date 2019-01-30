@@ -18,9 +18,10 @@ build_script:
     cd ..
 artifacts:
 - path: build/libtuesday.dll
+  name: binary
 deploy:
 - provider: GitHub
   auth_token:
     secure: FRoyLpk+k5AdG+znJ2jHcnp41ENo19Obv2vyhhh2ihg35oUVbM+KHhFlV+ChG+mp
-  artifact: build/libtuesday.dll
+  artifact: binary
   force_update: true
