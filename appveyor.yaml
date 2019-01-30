@@ -16,10 +16,11 @@ build_script:
     cmake .. -G "MinGW Makefiles"
     mingw32-make
     cd ..
-artifacts: 
-  - path: build/libtuesday.dll
+artifacts:
+- path: build/libtuesday.dll
 deploy:
 - provider: GitHub
   auth_token:
     secure: FRoyLpk+k5AdG+znJ2jHcnp41ENo19Obv2vyhhh2ihg35oUVbM+KHhFlV+ChG+mp
   artifact: build/libtuesday.dll
+  force_update: true
